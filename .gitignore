@@ -1,5 +1,8 @@
+.bloop
+.metals
 /.idea/
 /project/target/
+/project/project/
 /target/
 /akkaGrpc/target/
 /protoGrpc/target/

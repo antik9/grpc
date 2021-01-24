@@ -7,6 +7,7 @@ import io.grpc.{ManagedChannel, ManagedChannelBuilder}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /***
    *   Реализуйте методы HelloWorldStubDecorator
@@ -23,8 +24,15 @@ object DecoratorTask extends App {
   val stub: HelloWorldStub = new HelloWorldStub(channel)
 
   class HelloWorldStubDecorator(underlining: HelloWorld) {
-    def hello(request: HelloRequest): scala.concurrent.Future[HelloResponse] = ???
-    def helloStream(stream: Source[HelloRequest, akka.NotUsed]): Source[HelloResponse, akka.NotUsed] = ???
+    def hello(request: HelloRequest): scala.concurrent.Future[HelloResponse] =
+      Future {
+        HelloResponse(s"get rpc message ${request.msg}")
+      }
+
+    def helloStream(stream: Source[HelloRequest, akka.NotUsed]): Source[HelloResponse, akka.NotUsed] =
+      stream.map {
+        req => HelloResponse(s"get stream message ${req.msg}")
+      }
   }
 
   val helloWorldClient = new HelloWorldStubDecorator(stub)
